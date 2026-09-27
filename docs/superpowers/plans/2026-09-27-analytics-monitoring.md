@@ -14,6 +14,7 @@
 - [x] `deploy/serve.py`：POST 同源记录、GET 公开计数，路径白名单及大小/速率边界；保留静态服务与 404。
 - [x] `src/components/Analytics.astro`、Base、文章页和 privacy：公开阅读/访问人数、可见页面记录、失败与中英文文案。
 - [x] `deploy/monitor.py`、`deploy/monitor.html`：8765 来源限制、系统采样与故障隔离、统计可视化；`tests/test_monitor.py` 验证权限和解析。
-- [x] `deploy/ledger-metrics.mjs` 与安装脚本：只读聚合 loopback 8788，实际房间仓库状态变化测试；不修改 Ledger 本地未提交内容。
+- [x] `deploy/ledger-metrics.ts` 与安装脚本：只读聚合 loopback 8788，实际房间仓库状态变化测试；不修改 Ledger 本地未提交内容。
 - [x] `deploy/termux/20-zuoer-monitor`：独立幂等启动；检查现有开机启动不被覆盖。
-- [ ] 运行完整验证，检查隐私和 noreply 提交身份，发布备份及新 release，验证公网和内网及双启动。GitHub Discussions/Giscus 配置需现有 GitHub 登录和 Giscus App 已安装；如条件不足明确报告。
+- [x] 运行完整验证，检查隐私和 noreply 提交身份，发布备份及新 release，验证公网和内网及双启动，推送到指定博客仓库。
+- [ ] GitHub Discussions/Giscus 配置：仍需 GitHub API 登录及 Giscus App 授权。
