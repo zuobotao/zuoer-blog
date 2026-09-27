@@ -1,0 +1,21 @@
+---
+import Home from '../index.astro';
+import About from '../about.astro';
+import Privacy from '../privacy.astro';
+import Search from '../search.astro';
+import NotFound from '../404.astro';
+import Archive from '../[section]/index.astro';
+import Article from '../[section]/[...id].astro';
+import { sections, entries } from '../../lib/content';
+export async function getStaticPaths() {
+  const pages = ['', 'about', 'privacy', 'search', '404'].map((path) => ({ params: { path: path || undefined }, props: { kind: path || 'home' } }));
+  for (const [section, info] of Object.entries(sections)) {
+    pages.push({ params: { path: section }, props: { kind: 'archive', section, info } } as any);
+    for (const post of await entries(section)) pages.push({ params: { path: `${section}/${post.id}` }, props: { kind: 'article', section, post } } as any);
+  }
+  return pages;
+}
+const components = { home: Home, about: About, privacy: Privacy, search: Search, '404': NotFound, archive: Archive, article: Article };
+const Page: any = components[Astro.props.kind as keyof typeof components];
+---
+<Page {...Astro.props} />

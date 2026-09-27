@@ -1,0 +1,64 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Comments from '../../components/Comments.astro';
+import { sections, entries, dateLabel } from '../../lib/content';
+export async function getStaticPaths() {
+  return (
+    await Promise.all(
+      Object.keys(sections).map(async (section) =>
+        (await entries(section)).map((post) => ({
+          params: { section, id: post.id },
+          props: { post, section },
+        })),
+      ),
+    )
+  ).flat();
+}
+const { post, section } = Astro.props;
+const { Content, headings } = await render(post);
+const info = sections[section as keyof typeof sections];
+const en = Astro.url.pathname.startsWith('/en/');
+---
+
+<Base
+  title={`${post.data.title} · 左二`}
+  description={post.data.description}
+  article
+>
+  <div class="article-layout">
+    <article data-pagefind-body={!en || undefined} data-pagefind-ignore={en || undefined}>
+      <a class="back" href={`/${section}/`}>
+        ← 返回{info.name}
+      </a>
+      <header class="article-heading">
+        <div class="entry-meta">
+          <time>{dateLabel(post.data.date)}</time>
+          <span>{post.data.tags.join(' / ')}</span>
+        </div>
+        <h1 data-pagefind-meta="title">{post.data.title}</h1>
+        <p>{post.data.description}</p>
+        {section === 'projects' && post.id === 'ledger' && <a class="hand-link" href="https://ledger-game.zuo2.cc/">{en ? 'Play Ledger ↗' : '开始体验 Ledger ↗'}</a>}
+      </header>
+      {en && <p class="language-notice" data-pagefind-ignore>This article is in Chinese.</p>}
+      <div class="prose" lang="zh-CN">
+        <Content />
+      </div>
+      <div class="article-end">
+        <span>感谢读到这里。</span>
+        <a href={`/${section}/`}>继续阅读 ↗</a>
+      </div>
+      <Comments />
+    </article>
+    {headings.length > 0 && (
+      <aside class="toc" aria-label="文章目录">
+        <span class="eyebrow">本文目录</span>
+        {headings
+          .filter((h) => h.depth === 2)
+          .map((h) => (
+            <a href={`#${h.slug}`} lang="zh-CN">{h.text}</a>
+          ))}
+      </aside>
+    )}
+  </div>
+</Base>

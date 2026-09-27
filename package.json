@@ -1,0 +1,27 @@
+{
+  "name": "zuoer-blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check",
+    "test": "node --test tests/*.test.mjs",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.0.0",
+    "astro": "^7.3.5",
+    "lxgw-wenkai-screen-webfont": "^1.7.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "pagefind": "^1.4.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,26 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+export PATH=/data/data/com.termux/files/usr/bin:/system/bin
+umask 077
+server_home=/data/data/com.termux/files/home
+server_state="$server_home/.termux/server-start"
+mkdir -p "$server_state"
+exec 9> "$server_state/start.lock"
+flock -n 9 || exit 0
+exec >> "$server_state/boot.log" 2>&1
+printf '\nStartup at %s\n' "$(date -Is)"
+cd "$server_home" || exit 1
+. "$server_state/ensure-process.sh"
+boot_status=0
+termux-wake-lock || printf 'Warning: wake lock unavailable\n'
+if ! pgrep -x sshd >/dev/null; then
+  sshd || boot_status=1
+fi
+ensure_process '^(/data/data/com\.termux/files/usr/bin/)?python3 /data/data/com\.termux/files/home/zuoer-blog/serve\.py --directory /data/data/com\.termux/files/home/zuoer-blog/current --port 8080$' \
+  "$server_home/zuoer-blog/server.log" "$server_home/zuoer-blog/server.pid" \
+  python3 "$server_home/zuoer-blog/serve.py" --directory "$server_home/zuoer-blog/current" --port 8080 || boot_status=1
+ensure_process '^(/data/data/com\.termux/files/usr/bin/)?cloudflared tunnel run zuo2-home$' \
+  "$server_state/tunnel.log" "$server_state/tunnel.pid" \
+  cloudflared tunnel run zuo2-home || boot_status=1
+printf 'Startup finished, status=%s\n' "$boot_status"
+exit "$boot_status"

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="搜索 · 左二">
+  <section class="page-heading">
+    <span class="eyebrow">Search</span>
+    <h1>
+      找一找<span class="name-dot">。</span>
+    </h1>
+    <p>搜索文章、项目、短记与周读。</p>
+  </section>
+  <div id="search"></div>
+  <p id="search-error" hidden role="status">
+    搜索索引尚未生成，请运行 npm run build 后用 npm run preview 预览。
+  </p>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    if (window.PagefindUI) {
+      const ui = new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        processResult: function (result) {
+          if (document.documentElement.lang === 'en') {
+            const localize = (value) => {
+              const url = new URL(value, location.origin);
+              if (url.origin === location.origin && !url.pathname.startsWith('/en/')) url.pathname = '/en' + url.pathname;
+              return url.href;
+            };
+            result.url = localize(result.url);
+            if (result.meta.url) result.meta.url = localize(result.meta.url);
+            for (const sub of result.sub_results || []) sub.url = localize(sub.url);
+          }
+          return result;
+        },
+        translations: document.documentElement.lang === 'en' ? {
+          placeholder: 'Search Chinese content, e.g. Agent or Worktree',
+          zero_results: 'No results for “[SEARCH_TERM]”',
+          search_label: 'Search this site', clear_search: 'Clear', load_more: 'Load more',
+        } : {
+          placeholder: '输入关键词，如 Agent、Worktree',
+          zero_results: '没有找到 “[SEARCH_TERM]” 的相关内容',
+          search_label: '全站搜索',
+          clear_search: '清除',
+          load_more: '加载更多',
+        },
+      });
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
+    } else {
+      document.querySelector('#search-error').hidden = false;
+    }
+  </script>
+</Base>

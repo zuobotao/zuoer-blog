@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import EntryList from '../components/EntryList.astro';
+import { entries } from '../lib/content';
+const articles = await entries('articles');
+const projects = await entries('projects');
+const notes = await entries('notes');
+const en = Astro.url.pathname.startsWith('/en/');
+---
+
+<Base description="hi 你好，我是左二，一个写代码的家伙！">
+  <section class="intro">
+    <div class="intro-copy">
+      <div class="eyebrow">
+        <span class="dot"></span>hi 你好，我是左二，一个写代码的家伙！
+      </div>
+      <h1>
+        写下思考<span class="title-comma">，</span>
+        <br />
+        保持
+        <span class="curious">
+          好奇<span class="name-dot">。</span>
+        </span>
+      </h1>
+      <p class="intro-line">
+        在代码与日常之间，留一页给想法。
+        <br />
+        关于 AI Agents、工程实践，以及沿途的发现。
+      </p>
+      <div class="intro-bottom">
+        <a class="hand-link" href="/about/">
+          你好，我是左二 <span>↗</span>
+        </a>
+        <span class="mono">EST. 2026</span>
+      </div>
+    </div>
+    <section class="desk intro-desk">
+      <span class="eyebrow">
+        ON MY DESK{' '}
+        <span class="desk-pin" aria-hidden="true">✳</span>
+      </span>
+      <h2>
+        案头，
+        <br />
+        未完的事。
+      </h2>
+      <p lang="zh-CN">Agent 如何从「能生成代码」走向「能完成工程任务」。</p>
+      <div class="topic-links">
+        {[
+          ['AI / Agent', 'Agent'],
+          ['Software engineering', 'Engineering'],
+          ['Architecture', 'Architecture'],
+          ['Thinking', 'Thinking'],
+        ].map(([label, query]) => (
+          <a href={`/search/?q=${encodeURIComponent(query)}`}>
+            {label}<span>↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+    <div class="intro-colophon">
+      <span>随想，随写。</span>
+      <span lang="en">Thinking out loud, building along the way.</span>
+      <span class="colophon-star">✳</span>
+    </div>
+  </section>
+  <div class="home-grid">
+    <div>
+      <section>
+        <div class="section-title">
+          <h2>
+            最近写下的<span>Latest writing</span>
+          </h2>
+          <a href="/articles/">全部文章 ↗</a>
+        </div>
+        <EntryList posts={articles.slice(0, 4)} featured />
+      </section>
+      <section class="notes-section">
+        <div class="section-title">
+          <h2>
+            随手记<span>Field notes</span>
+          </h2>
+          <a href="/notes/">更多短记 ↗</a>
+        </div>
+        {notes.slice(0, 2).map((p) => (
+          <a class="note-preview" href={`/notes/${p.id}/`}>
+            <span class="note-mark">✳</span>
+            <div>
+              <h3 lang="zh-CN">
+                {p.data.title}
+              </h3>
+              <p lang="zh-CN">{p.data.description}</p>
+              {en && <span class="content-language">Chinese</span>}
+            </div>
+            <span>↗</span>
+          </a>
+        ))}
+      </section>
+    </div>
+    <aside class="sidebar">
+      <section class="project-section">
+        <div class="section-title">
+          <h2>
+            构建中<span>Projects</span>
+          </h2>
+        </div>
+        {projects.map((p, i) => (
+          <a class="project" href={`/projects/${p.id}/`}>
+            <div class={`project-symbol symbol-${i}`}>
+              {i === 0 ? '⬡' : '≡'}
+            </div>
+            <div>
+              <h3 lang="zh-CN">{p.data.title} ↗</h3>
+              <p lang="zh-CN">{p.data.description}</p>
+              {en && <span class="content-language">Chinese · </span>}
+              <span class="project-status">
+                ● {p.data.status}
+              </span>
+            </div>
+          </a>
+        ))}
+      </section>
+      <a class="hand-link ledger-launch" href="https://ledger-game.zuo2.cc/">{Astro.url.pathname.startsWith('/en/') ? 'Play Ledger ↗' : '开始体验 Ledger ↗'}</a>
+      <a class="rss-box" href="/rss.xml">
+        <span>好内容，慢慢读。</span>
+        <p>
+          通过 RSS 订阅更新 <span>↗</span>
+        </p>
+      </a>
+    </aside>
+  </div>
+</Base>

@@ -1,0 +1,37 @@
+---
+import { dateLabel } from '../lib/content';
+const {
+  posts,
+  section = 'articles',
+  start = 0,
+  featured = false,
+} = Astro.props;
+const en = Astro.url.pathname.startsWith('/en/');
+---
+
+<div class="entry-list">
+  {posts.map((p: any, i: number) => (
+    <a
+      class:list={['entry', { 'featured-entry': featured && start + i === 0 }]}
+      href={`/${section}/${p.id}/`}
+    >
+      <span class="entry-number" aria-hidden="true">
+        {String(start + i + 1).padStart(2, '0')}
+      </span>
+      <div class="entry-body">
+        <div class="entry-meta">
+          <time datetime={p.data.date.toISOString()}>
+            {dateLabel(p.data.date)}
+          </time>
+          <span>{p.data.tags.join(' / ')}</span>
+          {en && <span class="content-language">Chinese</span>}
+        </div>
+        <h3>
+          <span class="entry-title" lang="zh-CN">{p.data.title}</span>
+          <span class="arrow">↗</span>
+        </h3>
+        <p>{p.data.description}</p>
+      </div>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+const en = Astro.url.pathname.startsWith('/en/');
+---
+
+<Base title="关于 · 左二">
+  <section class="page-heading">
+    <span class="eyebrow">About</span>
+    <h1>
+      左二<span class="name-dot">。</span>
+    </h1>
+    <p>写代码，也写下思考。</p>
+  </section>
+  {en ? <div class="prose about">
+    <h2>What I write about</h2>
+    <p>A personal space for AI agents, software engineering, and long-term technical notes. Articles explore ideas in depth; notes capture discoveries; weekly reading collects reflections; projects document the journey from idea to implementation.</p>
+    <h2>About the content</h2>
+    <p>Agents can help organize and edit, but the final words and judgments belong to the author. Articles are currently written in Chinese.</p>
+    <h2>At my own pace</h2>
+    <p>No fixed publishing schedule. I hope each piece will still be worth returning to later.</p>
+    <a href="/rss.xml">Subscribe via RSS ↗</a>
+  </div> : <div class="prose about">
+    <h2>这里记录什么</h2>
+    <p>
+      这是一个个人技术实验室，关注 AI
+      Agent、软件工程和长期技术笔记。文章整理完整的思考，短记收集尚未成篇的发现，周读记录阅读，项目页保留从想法到实现的过程。
+    </p>
+    <h2>关于内容</h2>
+    <p>
+      内容由作者持续整理。Agent
+      可以帮助整理和编辑，最终的表达与判断由作者决定。
+    </p>
+    <h2>慢慢更新</h2>
+    <p>不追求更新频率，尽量让每一篇内容都能在以后被重新读到。</p>
+    <a href="/rss.xml">通过 RSS 订阅 ↗</a>
+  </div>}
+</Base>

@@ -1,0 +1,103 @@
+---
+import '../styles/global.css';
+import 'lxgw-wenkai-screen-webfont/lxgwwenkaiscreen.css';
+const {
+  title = '左二 · 技术与日常',
+  description = '左二的个人技术实验室。记录 AI Agent、软件工程，以及构建过程中的思考。',
+  article = false,
+} = Astro.props;
+const path = Astro.url.pathname;
+const en = path.startsWith('/en/');
+const metaDescription = en && !article ? "Hi, I'm Zuoer, a guy who writes code! Notes on AI agents, software engineering, and building things." : description;
+const chinesePath = path.includes('/404') ? '/' : en ? path.slice(3) : path;
+const canonical = new URL(path, Astro.site);
+---
+
+<!doctype html>
+<html lang={en ? 'en' : 'zh-CN'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={metaDescription} />
+    <meta name="theme-color" content="#f3efe6" />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(`/en${chinesePath}`, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(chinesePath, Astro.site)} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="左二 RSS"
+      href="/rss.xml"
+    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body class={article ? 'reading-page' : 'journal-page'}>
+    <a class="skip" href="#main-content">
+      跳转到正文
+    </a>
+    <div class="site-shell">
+      <header class="header">
+        <a class="brand" href="/" aria-label="左二首页">
+          <span class="seal">左二</span>
+          <span class="brand-name">
+            左二<span class="brand-caption">技术与日常</span>
+          </span>
+        </a>
+        <nav aria-label="主导航">
+          {[
+            ['/articles/', '文章'],
+            ['/projects/', '项目'],
+            ['/notes/', '短记'],
+            ['/weekly/', '周读'],
+            ['/about/', '关于'],
+          ].map(([href, label]) => (
+            <a
+              href={href}
+              aria-current={chinesePath.startsWith(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          ))}
+          <a class="search-link" href="/search/" aria-label="搜索">
+            ⌕<span>搜索</span>
+          </a>
+        </nav>
+        <div class="language-switch" aria-label={en ? 'Language' : '语言'}>
+          <a data-language="zh" href={chinesePath} lang="zh-CN" aria-current={!en ? 'page' : undefined}>中文</a>
+          <span aria-hidden="true">/</span>
+          <a data-language="en" href={`/en${chinesePath}`} lang="en" aria-current={en ? 'page' : undefined}>EN</a>
+        </div>
+      </header>
+      <main id="main-content">
+        <slot />
+      </main>
+      <footer>
+        <div>
+          <span class="footer-brand">
+            左二
+            <span class="footer-star" aria-hidden="true">
+              ✳
+            </span>
+          </span>
+          <span class="footer-note">纸短，思考很长。</span>
+        </div>
+        <div>
+          <a href="/rss.xml">RSS ↗</a>
+          <a href="/privacy/">隐私</a>
+          <span>© {new Date().getFullYear()} 左二</span>
+        </div>
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => {
+      link.href += location.search + location.hash;
+    });
+  </script>
+</html>

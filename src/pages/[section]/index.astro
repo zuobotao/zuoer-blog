@@ -1,0 +1,70 @@
+---
+import Base from '../../layouts/Base.astro';
+import EntryList from '../../components/EntryList.astro';
+import { sections, entries } from '../../lib/content';
+export function getStaticPaths() {
+  return Object.entries(sections).map(([section, info]) => ({
+    params: { section },
+    props: { info, section },
+  }));
+}
+const section = Astro.props.section ?? Astro.params.section;
+const { info } = Astro.props;
+const posts = await entries(section!);
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+---
+
+<Base title={`${info.name} · 左二`}>
+  <section class="page-heading">
+    <span class="page-art" aria-hidden="true">
+      {info.name.slice(0, 1)}
+    </span>
+    <span class="eyebrow">{info.en}</span>
+    <h1>
+      {info.name}
+      <span class="name-dot">。</span>
+    </h1>
+    <p>{info.description}</p>
+    <span class="archive-caption">
+      {String(posts.length).padStart(2, '0')} 篇记录 <span> / </span>{' '}
+      持续生长的手记
+    </span>
+  </section>
+  <div class="filters" aria-label="按标签筛选">
+    <button class="active" data-filter="all" aria-pressed="true">
+      全部 <span>{posts.length}</span>
+    </button>
+    {tags.map((tag) => (
+      <button data-filter={tag} aria-pressed="false">
+        {tag}
+      </button>
+    ))}
+  </div>
+  <div id="filtered-list">
+    {posts.map((p, i) => (
+      <div data-tags={JSON.stringify(p.data.tags)}>
+        <EntryList posts={[p]} section={section} start={i} featured />
+      </div>
+    ))}
+  </div>
+  <p id="filter-status" class="sr-only" aria-live="polite"></p>
+</Base>
+<script>
+  document
+    .querySelectorAll<HTMLButtonElement>('[data-filter]')
+    .forEach((button) =>
+      button.addEventListener('click', () => {
+        const tag = button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach((b) => {
+          b.classList.toggle('active', b === button);
+          b.setAttribute('aria-pressed', String(b === button));
+        });
+        document.querySelectorAll<HTMLElement>('[data-tags]').forEach((row) => {
+          row.hidden =
+            tag !== 'all' && !JSON.parse(row.dataset.tags!).includes(tag);
+        });
+        document.querySelector('#filter-status')!.textContent =
+          document.documentElement.lang === 'en' ? `Filtered: ${tag}` : `已筛选：${tag}`;
+      }),
+    );
+</script>
