@@ -27,7 +27,10 @@ const en = Astro.url.pathname.startsWith('/en/');
   article
 >
   <div class="article-layout">
-    <article data-pagefind-body={!en || undefined} data-pagefind-ignore={en || undefined}>
+    <article
+      data-pagefind-body={!en || undefined}
+      data-pagefind-ignore={en || undefined}
+    >
       <a class="back" href={`/${section}/`}>
         ← 返回{info.name}
       </a>
@@ -35,12 +38,32 @@ const en = Astro.url.pathname.startsWith('/en/');
         <div class="entry-meta">
           <time>{dateLabel(post.data.date)}</time>
           <span>{post.data.tags.join(' / ')}</span>
+          <span
+            data-pagefind-ignore
+            title={
+              en
+                ? 'Unique IP estimates, last 90 days'
+                : '近 90 天匿名 IP 估算人数'
+            }
+          >
+            {en ? 'Readers ' : '阅读 '}
+            <span data-analytics-count="readers">—</span>
+            {en ? '' : ' 人'}
+          </span>
         </div>
         <h1 data-pagefind-meta="title">{post.data.title}</h1>
         <p>{post.data.description}</p>
-        {section === 'projects' && post.id === 'ledger' && <a class="hand-link" href="https://ledger-game.zuo2.cc/">{en ? 'Play Ledger ↗' : '开始体验 Ledger ↗'}</a>}
+        {section === 'projects' && post.id === 'ledger' && (
+          <a class="hand-link" href="https://ledger-game.zuo2.cc/">
+            {en ? 'Play Ledger ↗' : '开始体验 Ledger ↗'}
+          </a>
+        )}
       </header>
-      {en && <p class="language-notice" data-pagefind-ignore>This article is in Chinese.</p>}
+      {en && (
+        <p class="language-notice" data-pagefind-ignore>
+          This article is in Chinese.
+        </p>
+      )}
       <div class="prose" lang="zh-CN">
         <Content />
       </div>
@@ -56,7 +79,9 @@ const en = Astro.url.pathname.startsWith('/en/');
         {headings
           .filter((h) => h.depth === 2)
           .map((h) => (
-            <a href={`#${h.slug}`} lang="zh-CN">{h.text}</a>
+            <a href={`#${h.slug}`} lang="zh-CN">
+              {h.text}
+            </a>
           ))}
       </aside>
     )}

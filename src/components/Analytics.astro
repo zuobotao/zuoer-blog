@@ -1,0 +1,61 @@
+<script>
+  const english = document.documentElement.lang === 'en';
+  const page = location.pathname.replace(/^\/en\//, '/');
+  const updateCounts = async () => {
+    try {
+      const response = await fetch(
+        `/api/analytics/counts?path=${encodeURIComponent(page)}`,
+        { credentials: 'omit' },
+      );
+      if (!response.ok) throw new Error('unavailable');
+      const data = await response.json();
+      document
+        .querySelectorAll<HTMLElement>('[data-analytics-count]')
+        .forEach((element) => {
+          const count = data[element.dataset.analyticsCount!];
+          if (typeof count === 'number')
+            element.textContent = count.toLocaleString();
+        });
+    } catch {
+      document
+        .querySelectorAll<HTMLElement>('[data-analytics-count]')
+        .forEach((element) => {
+          element.textContent = english ? 'unavailable' : '暂不可用';
+        });
+    }
+  };
+  updateCounts();
+  let tracked = false;
+  let timer: ReturnType<typeof setTimeout>;
+  const schedule = () => {
+    clearTimeout(timer);
+    if (
+      tracked ||
+      document.visibilityState !== 'visible' ||
+      navigator.doNotTrack === '1' ||
+      (navigator as Navigator & { globalPrivacyControl?: boolean })
+        .globalPrivacyControl
+    )
+      return;
+    timer = setTimeout(async () => {
+      if (document.visibilityState !== 'visible') return;
+      tracked = true;
+      try {
+        const response = await fetch('/api/analytics/view', {
+          method: 'POST',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            path: page,
+            source: document.referrer ? new URL(document.referrer).origin : '',
+          }),
+        });
+        if (response.ok) updateCounts();
+      } catch {
+        /* Reading remains usable if statistics fail. */
+      }
+    }, 5000);
+  };
+  document.addEventListener('visibilitychange', schedule);
+  schedule();
+</script>

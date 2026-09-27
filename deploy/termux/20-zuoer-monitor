@@ -1,0 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -eu
+export PATH=/data/data/com.termux/files/usr/bin:/system/bin
+umask 077
+server_home=/data/data/com.termux/files/home
+server_state="$server_home/.termux/server-start"
+mkdir -p "$server_state"
+exec 9> "$server_state/monitor-start.lock"
+flock -n 9 || exit 0
+exec >> "$server_state/monitor-boot.log" 2>&1
+. "$server_state/ensure-process.sh"
+ensure_process '^(/data/data/com\.termux/files/usr/bin/)?python3 /data/data/com\.termux/files/home/zuoer-blog/monitor\.py --blog-root /data/data/com\.termux/files/home/zuoer-blog --port 8765$' \
+  "$server_home/zuoer-blog/monitor.log" "$server_home/zuoer-blog/monitor.pid" \
+  python3 "$server_home/zuoer-blog/monitor.py" --blog-root "$server_home/zuoer-blog" --port 8765

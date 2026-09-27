@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Analytics from '../components/Analytics.astro';
 import 'lxgw-wenkai-screen-webfont/lxgwwenkaiscreen.css';
 const {
   title = '左二 · 技术与日常',
@@ -8,7 +9,10 @@ const {
 } = Astro.props;
 const path = Astro.url.pathname;
 const en = path.startsWith('/en/');
-const metaDescription = en && !article ? "Hi, I'm Zuoer, a guy who writes code! Notes on AI agents, software engineering, and building things." : description;
+const metaDescription =
+  en && !article
+    ? "Hi, I'm Zuoer, a guy who writes code! Notes on AI agents, software engineering, and building things."
+    : description;
 const chinesePath = path.includes('/404') ? '/' : en ? path.slice(3) : path;
 const canonical = new URL(path, Astro.site);
 ---
@@ -23,9 +27,21 @@ const canonical = new URL(path, Astro.site);
     <title>{title}</title>
     <link rel="icon" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="zh-CN" href={new URL(chinesePath, Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(`/en${chinesePath}`, Astro.site)} />
-    <link rel="alternate" hreflang="x-default" href={new URL(chinesePath, Astro.site)} />
+    <link
+      rel="alternate"
+      hreflang="zh-CN"
+      href={new URL(chinesePath, Astro.site)}
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href={new URL(`/en${chinesePath}`, Astro.site)}
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(chinesePath, Astro.site)}
+    />
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -69,9 +85,23 @@ const canonical = new URL(path, Astro.site);
           </a>
         </nav>
         <div class="language-switch" aria-label={en ? 'Language' : '语言'}>
-          <a data-language="zh" href={chinesePath} lang="zh-CN" aria-current={!en ? 'page' : undefined}>中文</a>
+          <a
+            data-language="zh"
+            href={chinesePath}
+            lang="zh-CN"
+            aria-current={!en ? 'page' : undefined}
+          >
+            中文
+          </a>
           <span aria-hidden="true">/</span>
-          <a data-language="en" href={`/en${chinesePath}`} lang="en" aria-current={en ? 'page' : undefined}>EN</a>
+          <a
+            data-language="en"
+            href={`/en${chinesePath}`}
+            lang="en"
+            aria-current={en ? 'page' : undefined}
+          >
+            EN
+          </a>
         </div>
       </header>
       <main id="main-content">
@@ -92,12 +122,23 @@ const canonical = new URL(path, Astro.site);
           <a href="/privacy/">隐私</a>
           <span>© {new Date().getFullYear()} 左二</span>
         </div>
+        <p class="site-stats" data-pagefind-ignore>
+          {en ? 'Last 90 days · ' : '近 90 天 · '}
+          {en ? 'Visitors ' : '访客 '}
+          <span data-analytics-count="visitors">—</span>
+          {' · '}
+          {en ? 'Visits ' : '访问 '}
+          <span data-analytics-count="views">—</span>
+        </p>
       </footer>
     </div>
+    <Analytics />
   </body>
   <script>
-    document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => {
-      link.href += location.search + location.hash;
-    });
+    document
+      .querySelectorAll<HTMLAnchorElement>('[data-language]')
+      .forEach((link) => {
+        link.href += location.search + location.hash;
+      });
   </script>
 </html>

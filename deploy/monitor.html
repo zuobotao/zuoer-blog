@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>左二 · 服务器案头</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f4efe5;
+        --ink: #302c25;
+        --muted: #776e61;
+        --line: #d8cdbb;
+        --red: #b43e22;
+        --green: #49614b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          16px/1.7 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: auto;
+        padding: 36px 24px 70px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: baseline;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 24px;
+      }
+      h1 {
+        font:
+          36px/1.4 Georgia,
+          serif;
+        margin: 0;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 32px 0 16px;
+      }
+      p {
+        margin: 8px 0;
+        color: var(--muted);
+      }
+      small,
+      .label {
+        color: var(--muted);
+      }
+      .eyebrow {
+        color: var(--red);
+        letter-spacing: 0.1em;
+        font-size: 12px;
+      }
+      #status {
+        color: var(--green);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      .metric {
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+      .value {
+        font-size: 30px;
+        line-height: 1.5;
+        font-variant-numeric: tabular-nums;
+      }
+      .bar {
+        height: 3px;
+        background: var(--line);
+        margin: 12px 0;
+      }
+      .bar i {
+        height: 100%;
+        display: block;
+        background: var(--red);
+      }
+      .services {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+      .service {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        border-bottom: 1px solid var(--line);
+        padding: 12px 0;
+      }
+      .good {
+        color: var(--green);
+      }
+      .bad {
+        color: var(--red);
+      }
+      .rooms {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .rooms span {
+        color: var(--muted);
+      }
+      .rooms strong {
+        color: var(--ink);
+        margin-left: 8px;
+      }
+      svg {
+        width: 100%;
+        height: 100px;
+        display: block;
+        overflow: visible;
+      }
+      .chart {
+        margin-top: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 36px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+      }
+      th {
+        text-align: left;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      td,
+      th {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      td:first-child {
+        overflow-wrap: anywhere;
+      }
+      td:not(:first-child),
+      th:not(:first-child) {
+        text-align: right;
+        width: 70px;
+      }
+      footer {
+        margin-top: 40px;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 640px) {
+        main {
+          padding: 24px 18px;
+        }
+        header {
+          display: block;
+        }
+        h1 {
+          font-size: 30px;
+        }
+        .grid,
+        .services {
+          grid-template-columns: 1fr 1fr;
+        }
+        .columns {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        .value {
+          font-size: 25px;
+        }
+        .rooms {
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <span class="eyebrow">ZUOER / LOCAL OBSERVATORY</span>
+          <h1>服务器案头</h1>
+          <p>博客、游戏与房间，运行在眼前。</p>
+        </div>
+        <div>
+          <div id="status" role="status">正在连接…</div>
+          <small id="updated">每 5 秒更新 · 只读内网</small>
+        </div>
+      </header>
+      <h2>机器资源</h2>
+      <div class="grid" id="resources"></div>
+      <div class="chart">
+        <small>近 5 分钟 · CPU（朱红）与内存（深绿）</small
+        ><svg
+          id="trend"
+          viewBox="0 0 600 100"
+          preserveAspectRatio="none"
+          aria-label="资源趋势"
+        ></svg>
+      </div>
+      <h2>服务状态</h2>
+      <div class="services" id="services"></div>
+      <h2>游戏房间</h2>
+      <p id="room-status">正在读取汇总…</p>
+      <div class="rooms" id="rooms"></div>
+      <h2>博客来访</h2>
+      <p>近 90 天 · 人数按匿名 IP 估算，刷新半小时内去重。</p>
+      <div class="grid" id="totals"></div>
+      <div class="chart">
+        <small>近 30 天访问量（北京时间）</small
+        ><svg
+          id="daily"
+          viewBox="0 0 600 100"
+          preserveAspectRatio="none"
+          aria-label="每日访问量"
+        ></svg>
+      </div>
+      <div class="columns">
+        <section>
+          <h2>热门页面</h2>
+          <table id="pages"></table>
+        </section>
+        <section>
+          <h2>来源域名</h2>
+          <table id="sources"></table>
+        </section>
+        <section>
+          <h2>脱敏 IP 网段</h2>
+          <table id="networks"></table>
+        </section>
+        <section>
+          <h2>设备类别</h2>
+          <table id="devices"></table>
+        </section>
+      </div>
+      <footer>
+        统计数据在手机本地保存 90 天。完整 IP
+        不入库；网段可能包含多个访客。此页不提供重启或管理操作。
+      </footer>
+    </main>
+    <script>
+      const $ = (id) => document.getElementById(id),
+        text = (tag, value) => {
+          const el = document.createElement(tag);
+          el.textContent = value;
+          return el;
+        },
+        fmt = (n) => (typeof n === 'number' ? n.toLocaleString() : '不可用');
+      const bytes = (n) =>
+        typeof n === 'number' ? (n / 1024 ** 3).toFixed(1) + ' GB' : '不可用';
+      function metric(label, value, detail = '', percent = null) {
+        const el = document.createElement('div');
+        el.className = 'metric';
+        const l = text('div', label);
+        l.className = 'label';
+        const v = text('div', value);
+        v.className = 'value';
+        el.append(l, v, text('small', detail));
+        if (typeof percent === 'number') {
+          const bar = document.createElement('div'),
+            i = document.createElement('i');
+          bar.className = 'bar';
+          i.style.width = Math.max(0, Math.min(100, percent)) + '%';
+          bar.append(i);
+          el.append(bar);
+        }
+        return el;
+      }
+      function table(id, rows) {
+        const head = document.createElement('tr');
+        ['名称', '访问', '人数'].forEach((x) => head.append(text('th', x)));
+        const body = document.createElement('tbody');
+        for (const row of rows || []) {
+          const tr = document.createElement('tr');
+          tr.append(
+            text('td', row.label),
+            text('td', fmt(row.views)),
+            text('td', fmt(row.visitors)),
+          );
+          body.append(tr);
+        }
+        if (!rows?.length) {
+          const tr = document.createElement('tr'),
+            td = text('td', '暂无记录');
+          td.colSpan = 3;
+          tr.append(td);
+          body.append(tr);
+        }
+        $(id).replaceChildren(head, body);
+      }
+      const history = [];
+      function svg(tag, attrs) {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+        return el;
+      }
+      function trends(data) {
+        history.push({
+          time: Date.now(),
+          cpu: data.cpu,
+          memory: data.memory?.percent ?? null,
+        });
+        while (history.length && history[0].time < Date.now() - 300000)
+          history.shift();
+        $('trend').replaceChildren();
+        for (const [key, color] of [
+          ['cpu', '#b43e22'],
+          ['memory', '#49614b'],
+        ]) {
+          let segment = [];
+          const flush = () => {
+            if (segment.length)
+              $('trend').append(
+                svg('polyline', {
+                  points: segment.join(' '),
+                  fill: 'none',
+                  stroke: color,
+                  'stroke-width': 2,
+                }),
+              );
+            segment = [];
+          };
+          history.forEach((row) => {
+            if (typeof row[key] !== 'number') {
+              flush();
+              return;
+            }
+            segment.push(
+              `${600 - ((Date.now() - row.time) / 300000) * 600},${95 - row[key] * 0.9}`,
+            );
+          });
+          flush();
+        }
+      }
+      function render(d) {
+        const s = d.system;
+        $('status').textContent = '已连接';
+        $('status').className = 'good';
+        $('updated').textContent =
+          new Date(d.sampledAt * 1000).toLocaleTimeString() + ' 更新 · 每 5 秒';
+        $('resources').replaceChildren(
+          metric(
+            s.cpuScope === 'services' ? '本站服务 CPU' : '系统 CPU',
+            s.cpu === null ? '不可用' : s.cpu + '%',
+            s.cpuScope === 'services' ? '博客、游戏、隧道 · 占全机 CPU 容量' : '系统权限不足时不显示',
+            s.cpu,
+          ),
+          metric(
+            '内存',
+            s.memory ? s.memory.percent + '%' : '不可用',
+            s.memory
+              ? bytes(s.memory.used) + ' / ' + bytes(s.memory.total)
+              : '',
+            s.memory?.percent,
+          ),
+          metric(
+            '存储',
+            s.disk ? s.disk.percent + '%' : '不可用',
+            s.disk ? bytes(s.disk.used) + ' / ' + bytes(s.disk.total) : '',
+            s.disk?.percent,
+          ),
+          metric(
+            '运行时长',
+            s.uptime === null
+              ? '不可用'
+              : Math.floor(s.uptime / 86400) +
+                  ' 天 ' +
+                  Math.floor((s.uptime % 86400) / 3600) +
+                  ' 小时',
+            s.temperature === null ? 'CPU 温度不可用' : s.temperature + ' °C',
+          ),
+        );
+        trends(s);
+        $('services').replaceChildren();
+        for (const [key, name] of [
+          ['blog', '博客'],
+          ['game', 'Ledger 游戏'],
+          ['roomService', '房间服务'],
+          ['tunnel', 'Cloudflare Tunnel'],
+        ]) {
+          const item = d.services[key],
+            el = document.createElement('div');
+          el.className = 'service';
+          const state = text(
+            'span',
+            item.online === true
+              ? '在线'
+              : item.online === false
+                ? '离线'
+                : '不可用',
+          );
+          state.className = item.online === true ? 'good' : 'bad';
+          el.append(text('span', name), state);
+          $('services').append(el);
+        }
+        const rooms = d.services.rooms?.data;
+        $('rooms').replaceChildren();
+        $('room-status').textContent = rooms
+          ? '在线连接 ' + rooms.connections + ' · 只显示当前内存中的房间汇总'
+          : '房间统计暂不可用';
+        if (rooms)
+          for (const [key, name] of [
+            ['waiting', '等待'],
+            ['starting', '启动中'],
+            ['playing', '游戏中'],
+            ['paused', '暂停'],
+            ['finished', '结束'],
+            ['closed', '关闭'],
+          ]) {
+            const el = text('span', name);
+            el.append(text('strong', fmt(rooms.rooms[key])));
+            $('rooms').append(el);
+          }
+        const a = d.analytics;
+        $('totals').replaceChildren(
+          metric('访客人数', fmt(a?.visitors)),
+          metric('页面访问', fmt(a?.views)),
+          metric(
+            '有访问的页面',
+            a ? fmt(a.pages.length) : '不可用',
+            '榜单最多列出 20 页',
+          ),
+          metric('统计窗口', '90 天', '设备与来源不使用指纹'),
+        );
+        for (const key of ['pages', 'sources', 'networks', 'devices'])
+          table(key, a?.[key]);
+        $('daily').replaceChildren();
+        if (a?.daily.length) {
+          const rows = a.daily,
+            max = Math.max(1, ...rows.map((r) => r.views));
+          rows.forEach((r, i) => {
+            const bar = svg('rect', {
+              x: (i * 600) / rows.length + 2,
+              y: 95 - (r.views / max) * 85,
+              width: Math.max(2, 600 / rows.length - 4),
+              height: (r.views / max) * 85,
+              fill: '#b43e22',
+            });
+            bar.append(text('title', r.label + ' · ' + r.views));
+            $('daily').append(bar);
+          });
+        }
+      }
+      async function update() {
+        try {
+          const r = await fetch('/api/metrics', { cache: 'no-store' });
+          if (!r.ok) throw Error();
+          render(await r.json());
+        } catch {
+          $('status').textContent = '连接中断 · 数据可能过期';
+          $('status').className = 'bad';
+        } finally {
+          setTimeout(update, 5000);
+        }
+      }
+      update();
+    </script>
+  </body>
+</html>

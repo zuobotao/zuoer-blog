@@ -7,24 +7,54 @@ const en = Astro.url.pathname.startsWith('/en/');
   <section class="page-heading">
     <h1>隐私说明</h1>
   </section>
-  {en ? <div class="prose">
-    <p>This is a static blog with no account system and no analytics or advertising cookies. Full-text search runs in your browser and does not send search terms to an external search service.</p>
-    <p>Open-source fonts are self-hosted alongside the pages; no external font service is contacted. The hosting provider may retain request logs.</p>
-    <p>Comments connect to third-party services only when Giscus is configured and you choose to load them. A GitHub account is required to participate.</p>
-    <a href="/">← Back to home</a>
-  </div> : <div class="prose">
-    <p>
-      本站为静态博客，没有账户系统，不设置分析或广告
-      Cookie。全文搜索在浏览器中运行，不会将搜索词发送给站外搜索服务。
-    </p>
-    <p>
-      本站使用自托管的开源字体，字体文件与页面由同一站点提供，不连接外部字体服务。
-      站点托管服务可能记录请求日志。
-    </p>
-    <p>
-      评论仅在配置 Giscus 并由读者主动点击加载时连接第三方服务，参与讨论需要
-      GitHub 账户。
-    </p>
-    <a href="/">← 返回首页</a>
-  </div>}
+  {en ? (
+    <div class="prose">
+      <p>
+        This is a static blog with no account system and no analytics or
+        advertising cookies. Full-text search runs in your browser and does not
+        send search terms to an external search service.
+      </p>
+      <p>
+        Open-source fonts are self-hosted alongside the pages; no external font
+        service is contacted. The hosting provider may retain request logs.
+      </p>
+      <p>
+        First-party visit statistics retain anonymized IP identifiers, masked
+        network prefixes, page paths, referral domains and device categories for
+        90 days. Full IPs, search terms and URL query parameters are not stored.
+        Counts estimate visitors by IP and do not indicate that an article was
+        finished. Do Not Track and Global Privacy Control are respected.
+        Detailed statistics are accessible only on the owner's local network.
+      </p>
+      <p>
+        Comments connect to third-party services only when Giscus is configured
+        and you choose to load them. A GitHub account is required to
+        participate.
+      </p>
+      <a href="/">← Back to home</a>
+    </div>
+  ) : (
+    <div class="prose">
+      <p>
+        本站为静态博客，没有账户系统，不设置分析或广告
+        Cookie。全文搜索在浏览器中运行，不会将搜索词发送给站外搜索服务。
+      </p>
+      <p>
+        本站使用自托管的开源字体，字体文件与页面由同一站点提供，不连接外部字体服务。
+        站点托管服务可能记录请求日志。
+      </p>
+      <p>
+        评论仅在配置 Giscus 并由读者主动点击加载时连接第三方服务，参与讨论需要
+        GitHub 账户。
+      </p>
+      <p>
+        本站提供第一方访问统计，保留匿名 IP
+        标识、脱敏网段、页面路径、来源域名和设备类别 90 天，不保存完整
+        IP、搜索词或 URL 查询参数。阅读人数按匿名 IP
+        估算，不代表读完文章；共享网络或更换 IP 会影响人数。尊重 Do Not Track 和
+        Global Privacy Control；详细统计只在作者内网开放。
+      </p>
+      <a href="/">← 返回首页</a>
+    </div>
+  )}
 </Base>

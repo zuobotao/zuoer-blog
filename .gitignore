@@ -1,6 +1,9 @@
 node_modules/
 dist/
 .astro/
+__pycache__/
+deploy/data/
+*.sqlite3*
 .env
 .env.*
 !.env.example
